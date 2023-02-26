@@ -99,12 +99,22 @@ uint8_t _empDsAddr[1] = {1};
 #define DS_ADDR_MODE _empDsAddr
 
 // ====================== CLASS ======================
-template <uint8_t DS_PIN, uint8_t *DS_ADDR = (uint8_t*)nullptr, uint8_t DS_AM = 1, bool DS_PGM = 0>
+template <uint8_t *DS_ADDR = (uint8_t*)nullptr, uint8_t DS_AM = 1, bool DS_PGM = 0>
 class MicroDS18B20 {
 public:
-    MicroDS18B20() {
-        pinMode(DS_PIN, INPUT);
-        digitalWrite(DS_PIN, LOW);
+    MicroDS18B20(uint8_t ds_pin, bool with_init) {
+        DS_PIN = ds_pin;
+        if (with_init) {
+            pinMode(DS_PIN, INPUT);
+            digitalWrite(DS_PIN, LOW);
+        }
+    }
+    MicroDS18B20(uint8_t ds_pin) {
+        MicroDS18B20(ds_pin, true);
+    }
+
+    uint8_t get_pin() {
+        return DS_PIN;
     }
 
     // Установить разрешение термометра 9-12 бит
@@ -210,6 +220,7 @@ public:
     }
 
 private:
+    uint8_t DS_PIN;
     bool state[DS_AM];
     int16_t _buf[DS_AM];
     uint8_t *_addr = DS_ADDR;
